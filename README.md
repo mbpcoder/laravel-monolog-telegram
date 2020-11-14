@@ -11,7 +11,7 @@ monolog-telegram
 Install using composer:
 
 ```bash
-composer require thecoder/monolog-telegram  
+composer require thecoder/laravel-monolog-telegram  
 ```
 
 # Usage
@@ -27,16 +27,18 @@ Open config/logging.php and change the file
     
     ....
     
-    'telegram' => [
-        'driver'  => 'custom',
-		'level' => 'debug',
-        'via'     => TheCoder\MonologTelegram\TelegramBotHandler::class,
-		'formatter' => TheCoder\MonologTelegram\TelegramFormatter::class,
-        'token'   => env('LOG_TELEGRAM_BOT_TOKEN'),
-        'channel' => env('LOG_TELEGRAM_CHAT_ID'),
-		'botApi' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
-		'proxy' => env('LOG_TELEGRAM_BOT_PROXY', 'socks5h://localhost:9050'),		
-    ],
+        'telegram' => [
+            'driver' => 'monolog',
+            'level' => 'debug',
+            'handler' => TheCoder\MonologTelegram\TelegramBotHandler::class,
+            'formatter' => TheCoder\MonologTelegram\TelegramFormatter::class,
+            'handler_with' => [
+                'token' => env('LOG_TELEGRAM_BOT_TOKEN'),
+                'channel' => env('LOG_TELEGRAM_CHAT_ID'),
+                'botApi' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
+                'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
+            ],
+        ],
 ]
 
 ```
@@ -46,6 +48,6 @@ Add the following variables to your .env file.
 ```php
 LOG_TELEGRAM_BOT_TOKEN=
 LOG_TELEGRAM_CHAT_ID=
-LOG_TELEGRAM_BOT_API=
-LOG_TELEGRAM_BOT_PROXY=
-
+#LOG_TELEGRAM_BOT_API='https://api.telegram.org/bot'
+# add tor proxy for restricted country
+#LOG_TELEGRAM_BOT_PROXY='socks5h://localhost:53000'9050
