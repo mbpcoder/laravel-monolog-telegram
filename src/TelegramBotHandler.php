@@ -19,7 +19,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
 	 * Create telegram bot with https://telegram.me/BotFather and use access token from it.
 	 * @var string
 	 */
-	private $apiKey;
+	private $token;
 
 	/**
 	 * if telegram is blocked in your region you can use proxy
@@ -35,15 +35,15 @@ class TelegramBotHandler extends AbstractProcessingHandler
 	private $channel;
 
 	/**
-	 * @param string $apiKey Telegram bot access token provided by BotFather
+	 * @param string $token Telegram bot access token provided by BotFather
 	 * @param string $channel Telegram channel name
 	 * @inheritDoc
 	 */
-	public function __construct(string $apiKey, string $channel, $level = Logger::DEBUG, bool $bubble = true, $botApi = 'https://api.telegram.org/bot', $proxy = null)
+	public function __construct(string $token, string $channel, $level = Logger::DEBUG, bool $bubble = true, $botApi = 'https://api.telegram.org/bot', $proxy = null)
 	{
 		parent::__construct($level, $bubble);
 
-		$this->apiKey = $apiKey;
+		$this->token = $token;
 		$this->botApi = $botApi;
 		$this->channel = $channel;
 		$this->level = $level;
@@ -71,7 +71,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
 			}
 			$httpClient = new Client($option);
 
-			$url = $this->botApi . $this->apiKey . '/SendMessage';
+			$url = $this->botApi . $this->token . '/SendMessage';
 			$options = [
 				'form_params' => [
 					'text' => $message,
@@ -83,6 +83,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
 			$response = $httpClient->post($url, $options);
 		} catch (\Exception $e) {
 			//
+            $a =1;
 		}
 	}
 }
