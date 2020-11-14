@@ -1,5 +1,5 @@
 {
-  "name": "thecoder/monolog-telegram",
+  "name": "thecoder/laravel-monolog-telegram",
   "description": "Telegram Handler for Monolog",
   "keywords": [
     "log",
