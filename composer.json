@@ -28,7 +28,6 @@
   },
   "require": {
     "monolog/monolog": "~1",
-	"illuminate/routing": "^5|^6|^7",
     "ext-curl": "*"
   }
 }
