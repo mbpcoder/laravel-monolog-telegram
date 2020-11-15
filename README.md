@@ -34,8 +34,8 @@ Open config/logging.php and change the file
             'formatter' => TheCoder\MonologTelegram\TelegramFormatter::class,
             'handler_with' => [
                 'token' => env('LOG_TELEGRAM_BOT_TOKEN'),
-                'channel' => env('LOG_TELEGRAM_CHAT_ID'),
-                'botApi' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
+                'chat_id' => env('LOG_TELEGRAM_CHAT_ID'),
+                'bot_api' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
                 'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
             ],
         ],
@@ -50,4 +50,4 @@ LOG_TELEGRAM_BOT_TOKEN=
 LOG_TELEGRAM_CHAT_ID=
 #LOG_TELEGRAM_BOT_API='https://api.telegram.org/bot'
 # add tor proxy for restricted country
-#LOG_TELEGRAM_BOT_PROXY='socks5h://localhost:53000'9050
+#LOG_TELEGRAM_BOT_PROXY='socks5h://localhost:9050'

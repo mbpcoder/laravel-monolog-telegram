@@ -32,20 +32,20 @@ class TelegramBotHandler extends AbstractProcessingHandler
 	 * Since to start with '@' symbol as prefix.
 	 * @var string
 	 */
-	private $channel;
+	private $chatId;
 
 	/**
 	 * @param string $token Telegram bot access token provided by BotFather
 	 * @param string $channel Telegram channel name
 	 * @inheritDoc
 	 */
-	public function __construct(string $token, string $channel, $level = Logger::DEBUG, bool $bubble = true, $botApi = 'https://api.telegram.org/bot', $proxy = null)
+	public function __construct(string $token, string $chat_id, $level = Logger::DEBUG, bool $bubble = true, $bot_api = 'https://api.telegram.org/bot', $proxy = null)
 	{
 		parent::__construct($level, $bubble);
 
 		$this->token = $token;
-		$this->botApi = $botApi;
-		$this->channel = $channel;
+		$this->botApi = $bot_api;
+		$this->chatId = $chat_id;
 		$this->level = $level;
 		$this->bubble = $bubble;
 		$this->proxy = $proxy;
@@ -75,15 +75,14 @@ class TelegramBotHandler extends AbstractProcessingHandler
 			$options = [
 				'form_params' => [
 					'text' => $message,
-					'chat_id' => $this->channel,
+					'chat_id' => $this->chatId,
 					'parse_mode' => 'html',
 					'disable_web_page_preview' => true,
 				]
 			];
 			$response = $httpClient->post($url, $options);
 		} catch (\Exception $e) {
-			//
-            $a =1;
+            \logger($e->getMessage());
 		}
 	}
 }
