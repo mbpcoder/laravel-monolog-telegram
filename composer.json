@@ -27,7 +27,7 @@
     }
   },
   "require": {
-    "monolog/monolog": "~1",
+    "monolog/monolog": "^1.0|^2.0",
     "ext-curl": "*"
   }
 }
