@@ -82,7 +82,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
 			];
 			$response = $httpClient->post($url, $options);
 		} catch (\Exception $e) {
-            \logger($e->getMessage());
+			
 		}
 	}
 }
