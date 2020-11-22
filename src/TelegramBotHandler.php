@@ -4,9 +4,10 @@ namespace TheCoder\MonologTelegram;
 
 use GuzzleHttp\Client;
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 
-class TelegramBotHandler extends AbstractProcessingHandler
+class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInterface
 {
     /**
      * bot api url
