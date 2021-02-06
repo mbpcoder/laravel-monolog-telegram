@@ -71,7 +71,7 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
                 $option['verify'] = false;
             }
             if (!is_null($this->proxy)) {
-                $option['proxy'] = $this->proxy;a
+                $option['proxy'] = $this->proxy;
             }
             $httpClient = new Client($option);
 
