@@ -145,8 +145,14 @@ class TelegramFormatter implements FormatterInterface
         $message = $this->format;
         $lineFormatter = new LineFormatter();
 
-        $record['message'] = preg_replace('/<([^<]+)>/', '&lt;$1&gt;', $record['message']); // Replace '<' and '>' with their special codes
-        $record['message'] = preg_replace('/^Stack trace:\n((^#\d.*\n?)*)$/m', "\n<b>Stack trace:</b>\n<code>$1</code>", $record['message']); // Put the stack trace inside <code></code> tags
+        if (strpos($record['message'], 'Stack trace') !== false) {
+            // Replace '<' and '>' with their special codes
+            $record['message'] = preg_replace('/<([^<]+)>/', '&lt;$1&gt;', $record['message']);
+
+            // Put the stack trace inside <code></code> tags
+            $record['message'] = preg_replace('/^Stack trace:\n((^#\d.*\n?)*)$/m', "\n<b>Stack trace:</b>\n<code>$1</code>", $record['message']);
+        }
+
         $message = str_replace('%message%', $record['message'], $message);
 
         if ($record['context']) {
