@@ -34,19 +34,29 @@ class TelegramFormatter implements FormatterInterface
     private $separator;
 
     /**
+     * @var string
+     */
+    private $tags;
+
+    /**
      * Formatter constructor
      *
      * @param bool $html Format as HTML or not
      * @param string $format The format of the message
      * @param string $dateFormat The format of the timestamp: one supported by DateTime::format
      * @param string $separator Record separator used when sending batch of logs in one message
+     * @param string $tags Tags to be added to the message
      */
-    public function __construct($html = true, $format = null, $dateFormat = null, $separator = '-')
+    public function __construct($html = true, $format = null, $dateFormat = null, $separator = '-', $tags = '')
     {
         $this->html = $html;
         $this->format = $format ?: self::MESSAGE_FORMAT;
         $this->dateFormat = $dateFormat ?: self::DATE_FORMAT;
         $this->separator = $separator;
+        if (is_null($tags)) {
+            $tags = '';
+        }
+        $this->tags = explode(',', $tags);
     }
 
     /**
@@ -104,6 +114,7 @@ class TelegramFormatter implements FormatterInterface
             . '<b>Message:</b> ' . $exception->getMessage() . PHP_EOL
             . '<b>Exception:</b> ' . get_class($exception) . PHP_EOL
             . '<b>Code:</b> ' . $code . PHP_EOL
+            . '<b>Tags:</b> ' . $this->getTags() . PHP_EOL
             . '<b>File:</b> ' . $exception->getFile() . PHP_EOL
             . '<b>Line:</b> ' . $exception->getLine() . PHP_EOL
             . '<b>Url:</b> ' . urldecode($request->url()) . PHP_EOL
@@ -136,6 +147,18 @@ class TelegramFormatter implements FormatterInterface
         $message .= PHP_EOL . '<b>Request Inputs:</b> ' . json_encode($request->except('password', 'password_confirmation'), JSON_UNESCAPED_UNICODE);
 
         $message .= PHP_EOL . PHP_EOL . '<b>Trace: </b> ' . PHP_EOL . '<b> => </b> => ' . substr($exception->getTraceAsString(), 0, 1000) . ' ...';
+
+        return $message;
+    }
+
+    private function getTags()
+    {
+        $message = '';
+        foreach ($this->tags as $tag) {
+            if (!empty($tag)) {
+                $message .= '#' . $tag . ' ';
+            }
+        }
 
         return $message;
     }

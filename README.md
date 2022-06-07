@@ -30,14 +30,19 @@ Open config/logging.php and change the file
         'telegram' => [
             'driver' => 'monolog',
             'level' => 'debug',
+            
             'handler' => TheCoder\MonologTelegram\TelegramBotHandler::class,
-            'formatter' => TheCoder\MonologTelegram\TelegramFormatter::class,
             'handler_with' => [
                 'token' => env('LOG_TELEGRAM_BOT_TOKEN'),
                 'chat_id' => env('LOG_TELEGRAM_CHAT_ID'),
                 'bot_api' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
                 'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
             ],
+            
+            'formatter' => TheCoder\MonologTelegram\TelegramFormatter::class,
+            'formatter_with' => [
+                'tags' => env('LOG_TELEGRAM_TAGS', null),
+            ],            
         ],
 ]
 
