@@ -59,4 +59,5 @@ LOG_TELEGRAM_CHAT_ID=
 ```
 # ScreenShot
 
-![Casdapture](https://user-images.githubusercontent.com/3877538/124601040-a0cc8100-de7c-11eb-93b8-b5acf08d06c8.PNG)
+![image](https://user-images.githubusercontent.com/3877538/172431112-020d7a7c-f515-49bc-961a-3f63c9ff21af.png)
+
