@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
+use Monolog\LogRecord;
 
 class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInterface
 {
@@ -55,7 +56,7 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
     /**
      * @inheritDoc
      */
-    protected function write(array $record): void
+    protected function write(LogRecord $record): void
     {
         $this->send($record['formatted']);
     }
@@ -66,7 +67,7 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
      */
     protected function send(string $message, $option = []): void
     {
-        try {            
+        try {
             if(!isset($option['verify'])){
                 $option['verify'] = false;
             }

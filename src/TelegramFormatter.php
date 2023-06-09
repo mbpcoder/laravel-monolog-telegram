@@ -4,6 +4,7 @@ namespace TheCoder\MonologTelegram;
 
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
+use Monolog\LogRecord;
 
 /**
  * Formats a message to output suitable for Telegram chat
@@ -62,7 +63,7 @@ class TelegramFormatter implements FormatterInterface
     /**
      * {@inheritdoc}
      */
-    public function format(array $record)
+    public function format(LogRecord $record)
     {
         $message = '';
         if (isset($record['context']) && isset($record['context']['exception'])) {
