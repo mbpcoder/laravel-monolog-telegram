@@ -62,7 +62,7 @@ class TelegramFormatter implements FormatterInterface
     /**
      * {@inheritdoc}
      */
-    public function format(array $record)
+    public function format($record)
     {
         $message = '';
         if (isset($record['context']) && isset($record['context']['exception'])) {

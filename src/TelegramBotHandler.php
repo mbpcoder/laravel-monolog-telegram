@@ -55,7 +55,7 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
     /**
      * @inheritDoc
      */
-    protected function write(array $record): void
+    protected function write($record): void
     {
         $this->send($record['formatted']);
     }
