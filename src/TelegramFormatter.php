@@ -4,7 +4,6 @@ namespace TheCoder\MonologTelegram;
 
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
-use Monolog\LogRecord;
 
 /**
  * Formats a message to output suitable for Telegram chat
