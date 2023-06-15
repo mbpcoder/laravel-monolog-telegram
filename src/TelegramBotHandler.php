@@ -93,11 +93,9 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
 
             $httpClient = new Client($option);
 
-            if (strpos($this->botApi, 'https://api.telegram.org') === false) {
-                $url = $this->botApi;
-            } else {
-                $url = $this->botApi . $this->token . '/SendMessage';
-            }
+            $url = !str_contains($this->botApi, 'https://api.telegram.org')
+                ? $this->botApi
+                : $this->botApi . $this->token . '/SendMessage';
 
             $params = [
                 'text' => $message,
