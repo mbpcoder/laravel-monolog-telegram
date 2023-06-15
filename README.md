@@ -35,6 +35,7 @@ Open config/logging.php and change the file
             'handler_with' => [
                 'token' => env('LOG_TELEGRAM_BOT_TOKEN'),
                 'chat_id' => env('LOG_TELEGRAM_CHAT_ID'),
+                'topic_id' => env('LOG_TELEGRAM_TOPIC_ID',null),
                 'bot_api' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
                 'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
             ],
