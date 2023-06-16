@@ -54,6 +54,12 @@ Add the following variables to your .env file.
 ```php
 LOG_TELEGRAM_BOT_TOKEN=
 LOG_TELEGRAM_CHAT_ID=
+
+# If chat groups are used instead of telegram channels,
+# and the ability to set topics on groups is enabled,
+# this configuration can be utilized.
+LOG_TELEGRAM_TOPIC_ID=
+
 #LOG_TELEGRAM_BOT_API='https://api.telegram.org/bot'
 # add tor proxy for restricted country
 #LOG_TELEGRAM_BOT_PROXY='socks5h://localhost:9050'
