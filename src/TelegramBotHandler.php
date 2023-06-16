@@ -36,17 +36,33 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
     private $chatId;
 
     /**
+     * If chat groups are used instead of telegram channels,
+     * and the ability to set topics on groups is enabled,
+     * this configuration can be utilized.
+     * @var string|null
+     */
+    private $topicId;
+
+    /**
      * @param string $token Telegram bot access token provided by BotFather
      * @param string $channel Telegram channel name
      * @inheritDoc
      */
-    public function __construct(string $token, string $chat_id, $level = Logger::DEBUG, bool $bubble = true, $bot_api = 'https://api.telegram.org/bot', $proxy = null)
+    public function __construct(
+        string      $token,
+        string      $chat_id,
+        string|null $topic_id = null,
+                    $level = Logger::DEBUG,
+        bool        $bubble = true,
+                    $bot_api = 'https://api.telegram.org/bot',
+                    $proxy = null)
     {
         parent::__construct($level, $bubble);
 
         $this->token = $token;
         $this->botApi = $bot_api;
         $this->chatId = $chat_id;
+        $this->topicId = $topic_id;
         $this->level = $level;
         $this->bubble = $bubble;
         $this->proxy = $proxy;
@@ -63,32 +79,37 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
     /**
      * Send request to @link https://api.telegram.org/bot on SendMessage action.
      * @param string $message
+     * @param array $option
      */
     protected function send(string $message, $option = []): void
     {
-        try {            
-            if(!isset($option['verify'])){
+        try {
+
+            if (!isset($option['verify'])) {
                 $option['verify'] = false;
             }
+
             if (!is_null($this->proxy)) {
                 $option['proxy'] = $this->proxy;
             }
+
             $httpClient = new Client($option);
 
-            if (strpos($this->botApi, 'https://api.telegram.org') === false) {
-                $url = $this->botApi;
-            } else {
-                $url = $this->botApi . $this->token . '/SendMessage';
-            }
+            $url = !str_contains($this->botApi, 'https://api.telegram.org')
+                ? $this->botApi
+                : $this->botApi . $this->token . '/SendMessage';
+
+            $params = [
+                'text' => $message,
+                'chat_id' => $this->chatId,
+                'parse_mode' => 'html',
+                'disable_web_page_preview' => true,
+            ];
 
             $options = [
-                'form_params' => [
-                    'text' => $message,
-                    'chat_id' => $this->chatId,
-                    'parse_mode' => 'html',
-                    'disable_web_page_preview' => true,
-                ]
+                'form_params' => $this->topicId !== null ? $params + ['message_thread_id' => $this->topicId] : $params
             ];
+
             $response = $httpClient->post($url, $options);
         } catch (\Exception $e) {
 
