@@ -10,6 +10,12 @@ use Monolog\Logger;
 class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInterface
 {
     /**
+     * text parameter in sendMessage method
+     * @see https://core.telegram.org/bots/api#sendmessage
+     */
+    private const TELEGRAM_MESSAGE_SIZE = 4096;
+
+    /**
      * bot api url
      * @var string
      */
@@ -76,6 +82,15 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
         $this->send($record['formatted']);
     }
 
+    private function truncateTextToTelegramLimit(string $textMessage): string
+    {
+        if (strlen($textMessage) <= self::TELEGRAM_MESSAGE_SIZE) {
+            return $textMessage;
+        }
+
+        return substr($textMessage, 0, self::TELEGRAM_MESSAGE_SIZE);
+    }
+
     /**
      * Send request to @link https://api.telegram.org/bot on SendMessage action.
      * @param string $message
@@ -98,6 +113,8 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
             $url = !str_contains($this->botApi, 'https://api.telegram.org')
                 ? $this->botApi
                 : $this->botApi . $this->token . '/SendMessage';
+
+            $message = $this->truncateTextToTelegramLimit($message);
 
             $params = [
                 'text' => $message,
