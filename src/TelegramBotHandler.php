@@ -84,11 +84,11 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
 
     private function truncateTextToTelegramLimit(string $textMessage): string
     {
-        if (strlen($textMessage) <= self::TELEGRAM_MESSAGE_SIZE) {
+        if (mb_strlen($textMessage) <= self::TELEGRAM_MESSAGE_SIZE) {
             return $textMessage;
         }
 
-        return substr($textMessage, 0, self::TELEGRAM_MESSAGE_SIZE);
+        return mb_substr($textMessage, 0, self::TELEGRAM_MESSAGE_SIZE,'UTF-8');
     }
 
     /**
