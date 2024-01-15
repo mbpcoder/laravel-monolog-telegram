@@ -57,7 +57,7 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
     public function __construct(
         string      $token,
         string      $chat_id,
-        string|null $topic_id = null,
+        ?string $topic_id = null,
                     $level = Logger::DEBUG,
         bool        $bubble = true,
                     $bot_api = 'https://api.telegram.org/bot',
