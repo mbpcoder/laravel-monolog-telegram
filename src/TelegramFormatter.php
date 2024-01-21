@@ -145,7 +145,7 @@ class TelegramFormatter implements FormatterInterface
         }
 
         $message .= PHP_EOL . '<b>Request Inputs:</b> <pre>' . str_replace(
-            ["\n", " "], ['',''], json_encode($request->except('password', 'password_confirmation'), JSON_UNESCAPED_UNICODE)
+            ["\n", " ", '<' , '>'], ['', '' , '&lt;', '&gt;'], json_encode($request->except('password', 'password_confirmation'), JSON_UNESCAPED_UNICODE)
             ) . '</pre>';
 
         $message .= PHP_EOL . PHP_EOL . '<b>Trace: </b> ' . PHP_EOL . '<b> => </b> => ' . substr($exception->getTraceAsString(), 0, 1000) . ' ...';
