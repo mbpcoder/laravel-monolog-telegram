@@ -13,33 +13,33 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
      * text parameter in sendMessage method
      * @see https://core.telegram.org/bots/api#sendmessage
      */
-    private const TELEGRAM_MESSAGE_SIZE = 4096;
+    protected const TELEGRAM_MESSAGE_SIZE = 4096;
 
     /**
      * bot api url
      * @var string
      */
-    private $botApi;
+    protected $botApi;
 
     /**
      * Telegram bot access token provided by BotFather.
      * Create telegram bot with https://telegram.me/BotFather and use access token from it.
      * @var string
      */
-    private $token;
+    protected $token;
 
     /**
      * if telegram is blocked in your region you can use proxy
      * @var null
      */
-    private $proxy;
+    protected $proxy;
 
     /**
      * Telegram channel name.
      * Since to start with '@' symbol as prefix.
      * @var string
      */
-    private $chatId;
+    protected $chatId;
 
     /**
      * If chat groups are used instead of telegram channels,
@@ -47,7 +47,7 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
      * this configuration can be utilized.
      * @var string|null
      */
-    private $topicId;
+    protected $topicId;
 
     /**
      * @param string $token Telegram bot access token provided by BotFather
