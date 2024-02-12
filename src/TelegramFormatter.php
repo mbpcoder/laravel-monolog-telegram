@@ -16,27 +16,27 @@ class TelegramFormatter implements FormatterInterface
     /**
      * @var bool
      */
-    private $html;
+    protected $html;
 
     /**
      * @var string
      */
-    private $format;
+    protected $format;
 
     /**
      * @var string
      */
-    private $dateFormat;
+    protected $dateFormat;
 
     /**
      * @var string
      */
-    private $separator;
+    protected $separator;
 
     /**
      * @var string
      */
-    private $tags;
+    protected $tags;
 
     /**
      * Formatter constructor
