@@ -49,6 +49,18 @@ Open config/logging.php and change the file
 
 ```
 
+You can customize token, chat_id and topic_id in run time
+
+```php
+
+logger('message', [
+    'token' => 'your bot token',
+    'chat_id' => 'your chat id',
+    'topic_id' => 'your topic id'
+]);
+
+```
+
 Add the following variables to your .env file.
 
 ```php

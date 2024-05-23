@@ -55,13 +55,13 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
      * @inheritDoc
      */
     public function __construct(
-        string      $token,
-        string      $chat_id,
+        string $token,
+        string $chat_id,
         ?string $topic_id = null,
-                    $level = Logger::DEBUG,
-        bool        $bubble = true,
-                    $bot_api = 'https://api.telegram.org/bot',
-                    $proxy = null)
+               $level = Logger::DEBUG,
+        bool   $bubble = true,
+               $bot_api = 'https://api.telegram.org/bot',
+               $proxy = null)
     {
         parent::__construct($level, $bubble);
 
@@ -79,7 +79,11 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
      */
     protected function write($record): void
     {
-        $this->send($record['formatted']);
+        $token = $record['context']['token'] ?? null;
+        $chatId = $record['context']['chat_id'] ?? null;
+        $topicId = $record['context']['topic_id'] ?? null;
+
+        $this->send($record['formatted'], $token, $chatId, $topicId);
     }
 
     private function truncateTextToTelegramLimit(string $textMessage): string
@@ -88,7 +92,7 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
             return $textMessage;
         }
 
-        return mb_substr($textMessage, 0, self::TELEGRAM_MESSAGE_SIZE,'UTF-8');
+        return mb_substr($textMessage, 0, self::TELEGRAM_MESSAGE_SIZE, 'UTF-8');
     }
 
     /**
@@ -96,9 +100,13 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
      * @param string $message
      * @param array $option
      */
-    protected function send(string $message, $option = []): void
+    protected function send(string $message, $token = null, $chatId = null, $topicId = null, $option = []): void
     {
         try {
+
+            $token = $token ?? $this->token;
+            $chatId = $chatId ?? $this->chatId;
+            $topicId = $topicId ?? $this->topicId;
 
             if (!isset($option['verify'])) {
                 $option['verify'] = false;
@@ -112,24 +120,45 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
 
             $url = !str_contains($this->botApi, 'https://api.telegram.org')
                 ? $this->botApi
-                : $this->botApi . $this->token . '/SendMessage';
+                : $this->botApi . $token . '/SendMessage';
 
             $message = $this->truncateTextToTelegramLimit($message);
 
             $params = [
                 'text' => $message,
-                'chat_id' => $this->chatId,
+                'chat_id' => $chatId,
                 'parse_mode' => 'html',
                 'disable_web_page_preview' => true,
             ];
 
             $options = [
-                'form_params' => $this->topicId !== null ? $params + ['message_thread_id' => $this->topicId] : $params
+                'form_params' => $topicId !== null ? $params + ['message_thread_id' => $topicId] : $params
             ];
 
             $response = $httpClient->post($url, $options);
         } catch (\Exception $e) {
 
         }
+    }
+
+    public function setToken(string $token): static
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    public function setChatId(string $chatId): static
+    {
+        $this->chatId = $chatId;
+
+        return $this;
+    }
+
+    public function setTopicId(string $topicId): static
+    {
+        $this->topicId = $topicId;
+
+        return $this;
     }
 }
