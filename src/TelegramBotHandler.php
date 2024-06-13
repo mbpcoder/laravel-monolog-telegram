@@ -3,12 +3,18 @@
 namespace TheCoder\MonologTelegram;
 
 use GuzzleHttp\Client;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
 use Monolog\Handler\AbstractProcessingHandler;
-use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
+use ReflectionMethod;
+use TheCoder\MonologTelegram\Attributes\TopicLogInterface;
 
-class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInterface
+class TelegramBotHandler extends AbstractProcessingHandler
 {
+
+    protected Router $router;
+
     /**
      * text parameter in sendMessage method
      * @see https://core.telegram.org/bots/api#sendmessage
@@ -49,26 +55,32 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
      */
     protected $topicId;
 
+    protected $topicsLevel;
+
     /**
      * @param string $token Telegram bot access token provided by BotFather
      * @param string $channel Telegram channel name
      * @inheritDoc
      */
     public function __construct(
-        string $token,
-        string $chat_id,
+        Router  $router,
+        string  $token,
+        string  $chat_id,
         ?string $topic_id = null,
-               $level = Logger::DEBUG,
-        bool   $bubble = true,
-               $bot_api = 'https://api.telegram.org/bot',
-               $proxy = null)
+                $topics_level,
+                $level = Logger::DEBUG,
+        bool    $bubble = true,
+                $bot_api = 'https://api.telegram.org/bot',
+                $proxy = null)
     {
         parent::__construct($level, $bubble);
 
+        $this->router = $router;
         $this->token = $token;
         $this->botApi = $bot_api;
         $this->chatId = $chat_id;
         $this->topicId = $topic_id;
+        $this->topicsLevel = $topics_level;
         $this->level = $level;
         $this->bubble = $bubble;
         $this->proxy = $proxy;
@@ -76,12 +88,14 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
 
     /**
      * @inheritDoc
+     * @throws \ReflectionException
      */
     protected function write($record): void
     {
+        $topicId = $this->getTopicByAttribute();
         $token = $record['context']['token'] ?? null;
         $chatId = $record['context']['chat_id'] ?? null;
-        $topicId = $record['context']['topic_id'] ?? null;
+        $topicId = $topicId ?? $record['context']['topic_id'] ?? null;
 
         $this->send($record['formatted'], $token, $chatId, $topicId);
     }
@@ -138,6 +152,41 @@ class TelegramBotHandler extends AbstractProcessingHandler implements HandlerInt
             $response = $httpClient->post($url, $options);
         } catch (\Exception $e) {
 
+        }
+    }
+
+
+    protected function getTopicByAttribute(): string|null
+    {
+        $route = Route::current();
+        if ($route == null) {
+            return null;
+        }
+
+        $action = $route->getAction();
+
+        if (!isset($action['controller'])) {
+            return null;
+        }
+
+        try {
+
+            [$controller, $method] = explode('@', $action['controller']);
+            $reflectionMethod = new ReflectionMethod($controller, $method);
+
+            $attributes = $reflectionMethod->getAttributes();
+
+            if (empty($attributes)) {
+                return null;
+            }
+
+            /** @var TopicLogInterface $notifyException */
+            $notifyException = $attributes[0]->newInstance();
+
+            return $notifyException->getTopicId($this->topicsLevel);
+
+        } catch (\Throwable) {
+            return null;
         }
     }
 
