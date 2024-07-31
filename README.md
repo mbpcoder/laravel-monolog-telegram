@@ -19,6 +19,15 @@ Open config/logging.php and change the file
 
 ```php
 
+use TheCoder\MonologTelegram\Attributes\EmergencyAttribute;
+use TheCoder\MonologTelegram\Attributes\CriticalAttribute;
+use TheCoder\MonologTelegram\Attributes\ImportantAttribute;
+use TheCoder\MonologTelegram\Attributes\DebugAttribute;
+use TheCoder\MonologTelegram\Attributes\InformationAttribute;
+use TheCoder\MonologTelegram\Attributes\LowPriorityAttribute;
+
+    ....
+
  'channels' => [
     'stack' => [
         'driver'   => 'stack',
@@ -39,12 +48,12 @@ Open config/logging.php and change the file
                 'bot_api' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
                 'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
                 'topics_level' => [
-                    \TheCoder\MonologTelegram\Attributes\EmergencyAttribute::class => env('LOG_TELEGRAM_EMERGENCY_ATTRIBUTE_TOPIC_ID', null),
-                    \TheCoder\MonologTelegram\Attributes\CriticalAttribute::class => env('LOG_TELEGRAM_CRITICAL_ATTRIBUTE_TOPIC_ID', null),
-                    \TheCoder\MonologTelegram\Attributes\ImportantAttribute::class => env('LOG_TELEGRAM_IMPORTANT_ATTRIBUTE_TOPIC_ID', null),
-                    \TheCoder\MonologTelegram\Attributes\DebugAttribute::class => env('LOG_TELEGRAM_DEBUG_ATTRIBUTE_TOPIC_ID', null),
-                    \TheCoder\MonologTelegram\Attributes\InformationAttribute::class => env('LOG_TELEGRAM_INFORMATION_ATTRIBUTE_TOPIC_ID', null),
-                    \TheCoder\MonologTelegram\Attributes\LowPriorityAttribute::class => env('LOG_TELEGRAM_LOWPRIORITY_ATTRIBUTE_TOPIC_ID', null),
+                    EmergencyAttribute::class => env('LOG_TELEGRAM_EMERGENCY_ATTRIBUTE_TOPIC_ID', null),
+                    CriticalAttribute::class => env('LOG_TELEGRAM_CRITICAL_ATTRIBUTE_TOPIC_ID', null),
+                    ImportantAttribute::class => env('LOG_TELEGRAM_IMPORTANT_ATTRIBUTE_TOPIC_ID', null),
+                    DebugAttribute::class => env('LOG_TELEGRAM_DEBUG_ATTRIBUTE_TOPIC_ID', null),
+                    InformationAttribute::class => env('LOG_TELEGRAM_INFORMATION_ATTRIBUTE_TOPIC_ID', null),
+                    LowPriorityAttribute::class => env('LOG_TELEGRAM_LOWPRIORITY_ATTRIBUTE_TOPIC_ID', null),
                 ]
             ],
             
