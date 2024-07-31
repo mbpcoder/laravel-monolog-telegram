@@ -38,6 +38,14 @@ Open config/logging.php and change the file
                 'topic_id' => env('LOG_TELEGRAM_TOPIC_ID',null),
                 'bot_api' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
                 'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
+                'topics_level' => [
+                    \TheCoder\MonologTelegram\Attributes\EmergencyAttribute::class => env('LOG_TELEGRAM_EMERGENCY_ATTRIBUTE_TOPIC_ID', null),
+                    \TheCoder\MonologTelegram\Attributes\CriticalAttribute::class => env('LOG_TELEGRAM_CRITICAL_ATTRIBUTE_TOPIC_ID', null),
+                    \TheCoder\MonologTelegram\Attributes\ImportantAttribute::class => env('LOG_TELEGRAM_IMPORTANT_ATTRIBUTE_TOPIC_ID', null),
+                    \TheCoder\MonologTelegram\Attributes\DebugAttribute::class => env('LOG_TELEGRAM_DEBUG_ATTRIBUTE_TOPIC_ID', null),
+                    \TheCoder\MonologTelegram\Attributes\InformationAttribute::class => env('LOG_TELEGRAM_INFORMATION_ATTRIBUTE_TOPIC_ID', null),
+                    \TheCoder\MonologTelegram\Attributes\LowPriorityAttribute::class => env('LOG_TELEGRAM_LOWPRIORITY_ATTRIBUTE_TOPIC_ID', null),
+                ]
             ],
             
             'formatter' => TheCoder\MonologTelegram\TelegramFormatter::class,
@@ -47,6 +55,31 @@ Open config/logging.php and change the file
         ],
 ]
 
+```
+
+With topics_level you can set PHP Attribute(Annotation) to controller function
+
+and change the topic id base on this attributes
+
+Note: this package will only process first attribute
+
+Example:
+
+```php
+namespace App\Http\Controllers\NewWeb;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use TheCoder\MonologTelegram\Attributes\EmergencyAttribute;
+
+class HomeController extends Controller
+{
+    #[EmergencyAttribute]
+    public function index(Request $request)
+    {
+        //
+    }
+}
 ```
 
 You can customize token, chat_id and topic_id in run time
