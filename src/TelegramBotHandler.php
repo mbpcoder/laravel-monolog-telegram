@@ -3,6 +3,7 @@
 namespace TheCoder\MonologTelegram;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -67,7 +68,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
         string  $token,
         string  $chat_id,
         ?string $topic_id = null,
-                $topics_level,
+        $topics_level = [],
                 $level = Logger::DEBUG,
         bool    $bubble = true,
                 $bot_api = 'https://api.telegram.org/bot',
@@ -112,9 +113,13 @@ class TelegramBotHandler extends AbstractProcessingHandler
     /**
      * Send request to @link https://api.telegram.org/bot on SendMessage action.
      * @param string $message
+     * @param null $token
+     * @param null $chatId
+     * @param null $topicId
      * @param array $option
+     * @throws GuzzleException
      */
-    protected function send(string $message, $token = null, $chatId = null, $topicId = null, $option = []): void
+    protected function send(string $message, $token = null, $chatId = null, $topicId = null, array $option = []): void
     {
         try {
 
@@ -151,10 +156,9 @@ class TelegramBotHandler extends AbstractProcessingHandler
 
             $response = $httpClient->post($url, $options);
         } catch (\Exception $e) {
-
+            $a = 1;
         }
     }
-
 
     protected function getTopicByAttribute(): string|null
     {
@@ -169,25 +173,75 @@ class TelegramBotHandler extends AbstractProcessingHandler
             return null;
         }
 
-        try {
+        $topicId = $this->getTopicIdByReflection($action);
+        if ($topicId === false) {
+            $topicId = $this->getTopicIdByRegex($action);
+        }
 
+        return $topicId;
+    }
+
+    protected function getTopicIdByReflection($action): bool|string|null
+    {
+        try {
             [$controller, $method] = explode('@', $action['controller']);
             $reflectionMethod = new ReflectionMethod($controller, $method);
 
             $attributes = $reflectionMethod->getAttributes();
+                $attributes[0]?->newInstance() ?? null;
 
-            if (empty($attributes)) {
+            if ($attributes[0] !== null) {
+                /** @var TopicLogInterface $notifyException */
+                $notifyException = $attributes[0]->newInstance() ?? null;
+                return $notifyException->getTopicId($this->topicsLevel);
+            }
+
+        } catch (\Throwable $e) {
+
+        }
+        return false;
+    }
+
+    protected function getTopicIdByRegex($action)
+    {
+        try {
+            // if reflection coud not get attribute use reagex instead
+            [$controller, $method] = explode('@', $action['controller']);
+
+            $filePath = base_path(str_replace('App', 'app', $controller) . '.php');
+            $fileContent = file_get_contents($filePath);
+            $allAttributes = [];
+
+            // Regex to match attributes and methods
+            $regex = '/\#\[\s*(.*?)\s*\]\s*public\s*function\s*(\w+)/';
+            if (preg_match_all($regex, $fileContent, $matches, PREG_SET_ORDER)) {
+                foreach ($matches as $match) {
+                    $attributeString = $match[1];
+                    $methodName = $match[2];
+
+                    $attributes = array_map('trim', explode(',', $attributeString));
+                    foreach ($attributes as $attribute) {
+                        $attributeName = preg_replace('/\(.*/', '', $attribute);
+                        $allAttributes[$methodName][] = $attributeName;
+                    }
+                }
+            }
+
+            if (empty($allAttributes)) {
                 return null;
             }
 
-            /** @var TopicLogInterface $notifyException */
-            $notifyException = $attributes[0]->newInstance();
+            if (isset($allAttributes[$method][0])) {
+                foreach ($this->topicsLevel as $key => $_topicLevel) {
+                    if (str_contains($key, $allAttributes[$method][0])) {
+                        return $_topicLevel;
+                    }
+                }
+            }
 
-            return $notifyException->getTopicId($this->topicsLevel);
-
-        } catch (\Throwable) {
-            return null;
+        } catch (\Throwable $e) {
         }
+        return null;
     }
 
     public function setToken(string $token): static
