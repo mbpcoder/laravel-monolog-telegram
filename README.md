@@ -17,6 +17,10 @@ composer require thecoder/laravel-monolog-telegram
 # Usage
 Open config/logging.php and change the file
 
+### Run log in a Queue
+
+If a queue name is set, the job will run in the specified queue; otherwise, it will run synchronously.
+
 ```php
 
 use TheCoder\MonologTelegram\Attributes\EmergencyAttribute;
@@ -47,6 +51,7 @@ use TheCoder\MonologTelegram\Attributes\LowPriorityAttribute;
                 'topic_id' => env('LOG_TELEGRAM_TOPIC_ID',null),
                 'bot_api' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
                 'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
+                'queue' => env('LOG_TELEGRAM_QUEUE', null),
                 'topics_level' => [
                     EmergencyAttribute::class => env('LOG_TELEGRAM_EMERGENCY_ATTRIBUTE_TOPIC_ID', null),
                     CriticalAttribute::class => env('LOG_TELEGRAM_CRITICAL_ATTRIBUTE_TOPIC_ID', null),

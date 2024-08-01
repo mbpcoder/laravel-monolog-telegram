@@ -56,6 +56,8 @@ class TelegramBotHandler extends AbstractProcessingHandler
      */
     protected $topicId;
 
+    protected $queue = null;
+
     protected $topicsLevel;
 
     /**
@@ -68,6 +70,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
         string  $token,
         string  $chat_id,
         ?string $topic_id = null,
+        ?string $queue = null,
         $topics_level = [],
                 $level = Logger::DEBUG,
         bool    $bubble = true,
@@ -81,6 +84,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
         $this->botApi = $bot_api;
         $this->chatId = $chat_id;
         $this->topicId = $topic_id;
+        $this->queue = $queue;
         $this->topicsLevel = $topics_level;
         $this->level = $level;
         $this->bubble = $bubble;
@@ -116,47 +120,24 @@ class TelegramBotHandler extends AbstractProcessingHandler
      * @param null $token
      * @param null $chatId
      * @param null $topicId
-     * @param array $option
      * @throws GuzzleException
      */
-    protected function send(string $message, $token = null, $chatId = null, $topicId = null, array $option = []): void
+    protected function send(string $message, $token = null, $chatId = null, $topicId = null): void
     {
-        try {
+        $token = $token ?? $this->token;
+        $chatId = $chatId ?? $this->chatId;
+        $topicId = $topicId ?? $this->topicId;
 
-            $token = $token ?? $this->token;
-            $chatId = $chatId ?? $this->chatId;
-            $topicId = $topicId ?? $this->topicId;
+        $url = !str_contains($this->botApi, 'https://api.telegram.org')
+            ? $this->botApi
+            : $this->botApi . $token . '/SendMessage';
 
-            if (!isset($option['verify'])) {
-                $option['verify'] = false;
-            }
+        $message = $this->truncateTextToTelegramLimit($message);
 
-            if (!is_null($this->proxy)) {
-                $option['proxy'] = $this->proxy;
-            }
-
-            $httpClient = new Client($option);
-
-            $url = !str_contains($this->botApi, 'https://api.telegram.org')
-                ? $this->botApi
-                : $this->botApi . $token . '/SendMessage';
-
-            $message = $this->truncateTextToTelegramLimit($message);
-
-            $params = [
-                'text' => $message,
-                'chat_id' => $chatId,
-                'parse_mode' => 'html',
-                'disable_web_page_preview' => true,
-            ];
-
-            $options = [
-                'form_params' => $topicId !== null ? $params + ['message_thread_id' => $topicId] : $params
-            ];
-
-            $response = $httpClient->post($url, $options);
-        } catch (\Exception $e) {
-            $a = 1;
+        if ($this->queue === null) {
+            dispatch_sync(new SendJob($url, $message, $chatId, $topicId, $this->proxy));
+        } else {
+            dispatch(new SendJob($url, $message, $chatId, $topicId, $this->proxy))->onQueue($this->queue);
         }
     }
 
