@@ -134,7 +134,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
 
         $message = $this->truncateTextToTelegramLimit($message);
 
-        if ($this->queue === null) {
+        if (empty($this->queue)) {
             dispatch_sync(new SendJob($url, $message, $chatId, $topicId, $this->proxy));
         } else {
             dispatch(new SendJob($url, $message, $chatId, $topicId, $this->proxy))->onQueue($this->queue);
