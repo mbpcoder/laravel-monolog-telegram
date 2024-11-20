@@ -14,6 +14,12 @@ class SendJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    // Set the maximum number of retries
+    public $tries = 2;
+
+    // Set the retry delay (in seconds)
+    public $retryAfter = 120;
+
     public function __construct(
         private string      $url,
         private string      $message,
@@ -32,6 +38,8 @@ class SendJob implements ShouldQueue
         if (!is_null($this->proxy)) {
             $httpClientOption['proxy'] = $this->proxy;
         }
+
+        $httpClientOption['timeout'] = 5;
 
         $params = [
             'text' => $this->message,
