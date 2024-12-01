@@ -96,7 +96,7 @@ class TelegramFormatter implements FormatterInterface
         return $message;
     }
 
-    private function getMessageForException($exception)
+    protected function getMessageForException($exception)
     {
         $severity = '';
         $request = app('request');
@@ -153,7 +153,7 @@ class TelegramFormatter implements FormatterInterface
         return $message;
     }
 
-    private function getTags()
+    protected function getTags()
     {
         $message = '';
         foreach ($this->tags as $tag) {
@@ -165,7 +165,7 @@ class TelegramFormatter implements FormatterInterface
         return $message;
     }
 
-    private function getMessageForLog($record)
+    protected function getMessageForLog($record)
     {
         $message = $this->format;
         $lineFormatter = new LineFormatter();
@@ -205,7 +205,7 @@ class TelegramFormatter implements FormatterInterface
         return $message;
     }
 
-    private function getSeverityName($key)
+    protected function getSeverityName($key)
     {
         $severities = [
             1 => 'ERROR',
