@@ -2,7 +2,6 @@
 
 namespace TheCoder\MonologTelegram;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -71,7 +70,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
         string  $chat_id,
         ?string $topic_id = null,
         ?string $queue = null,
-        $topics_level = [],
+                $topics_level = [],
                 $level = Logger::DEBUG,
         bool    $bubble = true,
                 $bot_api = 'https://api.telegram.org/bot',
@@ -97,7 +96,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
      */
     protected function write($record): void
     {
-        $topicId = $this->getTopicByAttribute();
+        $topicId = $this->getTopicByAttribute($record);
         $token = $record['context']['token'] ?? null;
         $chatId = $record['context']['chat_id'] ?? null;
         $topicId = $topicId ?? $record['context']['topic_id'] ?? null;
@@ -141,35 +140,78 @@ class TelegramBotHandler extends AbstractProcessingHandler
         }
     }
 
-    protected function getTopicByAttribute(): string|null
+    protected function getTopicByAttribute($record): string|null
+    {
+        if (isset($record['context']['exception'])) {
+            $trace = $record['context']['exception']->getTrace();
+
+            $commandClass = $this->getClassForCommand($trace);
+            if ($commandClass) {
+                return $this->getTopicIdByReflection($commandClass, 'handle');
+            }
+
+            $jobClass = $this->getClassForJob($trace);
+            if ($jobClass) {
+                return $this->getTopicIdByReflection($jobClass, 'handle');
+            }
+        }
+
+        return $this->getTopicByRoute();
+    }
+
+    protected function getClassForCommand(array $trace): ?string
+    {
+        if (!app()->runningInConsole()) {
+            return null;
+        }
+
+        foreach ($trace as $frame) {
+            if ($frame['function'] === 'handle' && isset($frame['class']) && str_contains($frame['class'], 'Console\Commands')) {
+                return $frame['class'];
+            }
+        }
+
+        return null;
+    }
+
+    protected function getClassForJob(array $trace): ?string
+    {
+        if (!app()->bound('queue.worker')) {
+            return null;
+        }
+
+        foreach ($trace as $frame) {
+            if ($frame['function'] === 'handle' && isset($frame['class']) && str_contains($frame['class'], 'App\Jobs')) {
+                return $frame['class'];
+            }
+        }
+
+        return null;
+    }
+
+    protected function getTopicByRoute(): string|null
     {
         $route = Route::current();
-        if ($route == null) {
+        if (!$route || !isset($route->getAction()['controller'])) {
             return null;
         }
 
-        $action = $route->getAction();
+        [$controller, $method] = explode('@', $route->getAction()['controller']);
 
-        if (!isset($action['controller'])) {
-            return null;
-        }
-
-        $topicId = $this->getTopicIdByReflection($action);
+        $topicId = $this->getTopicIdByReflection($controller, $method);
         if ($topicId === false) {
-            $topicId = $this->getTopicIdByRegex($action);
+            $topicId = $this->getTopicIdByRegex($route->getAction());
         }
 
         return $topicId;
     }
 
-    protected function getTopicIdByReflection($action): bool|string|null
+    protected function getTopicIdByReflection($class, $method): bool|string|null
     {
         try {
-            [$controller, $method] = explode('@', $action['controller']);
-            $reflectionMethod = new ReflectionMethod($controller, $method);
+            $reflectionMethod = new ReflectionMethod($class, $method);
 
             $attributes = $reflectionMethod->getAttributes();
-                $attributes[0]?->newInstance() ?? null;
 
             if ($attributes[0] !== null) {
                 /** @var TopicLogInterface $notifyException */
@@ -186,7 +228,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
     protected function getTopicIdByRegex($action)
     {
         try {
-            // if reflection coud not get attribute use reagex instead
+            // if reflection could not get attribute use regex instead
             [$controller, $method] = explode('@', $action['controller']);
 
             $filePath = base_path(str_replace('App', 'app', $controller) . '.php');
