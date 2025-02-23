@@ -10,6 +10,10 @@ Install via Composer:
 composer require thecoder/laravel-monolog-telegram
 ```
 
+## ScreenShot
+
+![image](https://user-images.githubusercontent.com/3877538/172431112-020d7a7c-f515-49bc-961a-3f63c9ff21af.png)
+
 ## ⚙️ Usage
 
 Update your `config/logging.php` file to configure the Telegram logging channel.
