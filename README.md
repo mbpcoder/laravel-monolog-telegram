@@ -1,28 +1,28 @@
+# Monolog Telegram 🚀
 
+🔔 **Telegram Handler for Monolog** 📝
 
-monolog-telegram
-=============
+## 🎯 Installation
 
-🔔 Telegram Handler for Monolog
+Install via Composer:
 
-
-# Installation
------------
-Install using composer:
-
-```bash
-composer require thecoder/laravel-monolog-telegram  
+```sh
+composer require thecoder/laravel-monolog-telegram
 ```
 
-# Usage
-Open config/logging.php and change the file
+## ⚙️ Usage
 
-### Run log in a Queue
+Update your `config/logging.php` file to configure the Telegram logging channel.
 
-If a queue name is set, the job will run in the specified queue; otherwise, it will run synchronously.
+### ⏳ Running Logs in a Queue
+
+If a queue name is set, logs will be processed asynchronously in the specified queue. Otherwise, they will run synchronously.
+
+### 🔧 Configuration Example
+
+Modify your `config/logging.php` file:
 
 ```php
-
 use TheCoder\MonologTelegram\Attributes\EmergencyAttribute;
 use TheCoder\MonologTelegram\Attributes\CriticalAttribute;
 use TheCoder\MonologTelegram\Attributes\ImportantAttribute;
@@ -30,25 +30,21 @@ use TheCoder\MonologTelegram\Attributes\DebugAttribute;
 use TheCoder\MonologTelegram\Attributes\InformationAttribute;
 use TheCoder\MonologTelegram\Attributes\LowPriorityAttribute;
 
-    ....
+return [
+    'channels' => [
+        'stack' => [
+            'driver'   => 'stack',
+            'channels' => ['single', 'telegram'],
+        ],
 
- 'channels' => [
-    'stack' => [
-        'driver'   => 'stack',
-        'channels' => ['single', 'telegram'],
-    ],
-    
-    ....
-    
         'telegram' => [
             'driver' => 'monolog',
             'level' => 'debug',
-            
             'handler' => TheCoder\MonologTelegram\TelegramBotHandler::class,
             'handler_with' => [
                 'token' => env('LOG_TELEGRAM_BOT_TOKEN'),
                 'chat_id' => env('LOG_TELEGRAM_CHAT_ID'),
-                'topic_id' => env('LOG_TELEGRAM_TOPIC_ID',null),
+                'topic_id' => env('LOG_TELEGRAM_TOPIC_ID', null),
                 'bot_api' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
                 'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
                 'queue' => env('LOG_TELEGRAM_QUEUE', null),
@@ -61,23 +57,22 @@ use TheCoder\MonologTelegram\Attributes\LowPriorityAttribute;
                     LowPriorityAttribute::class => env('LOG_TELEGRAM_LOWPRIORITY_ATTRIBUTE_TOPIC_ID', null),
                 ]
             ],
-            
             'formatter' => TheCoder\MonologTelegram\TelegramFormatter::class,
             'formatter_with' => [
                 'tags' => env('LOG_TELEGRAM_TAGS', null),
-            ],            
+            ],
         ],
-]
-
+    ],
+];
 ```
 
-With topics_level you can set PHP Attribute(Annotation) to controller function
+### 🏷️ Topic-Based Logging
 
-and change the topic id base on this attributes
+You can assign a **PHP Attribute (Annotation)** to controller methods, command handlers, or job handlers, enabling topic-based logging. The package will use the first detected attribute to determine the topic for logging messages.
 
-Note: this package will only process first attribute
+#### 💡 Example:
 
-Example:
+**📌 Controller Method:**
 
 ```php
 namespace App\Http\Controllers\NewWeb;
@@ -91,48 +86,72 @@ class HomeController extends Controller
     #[EmergencyAttribute]
     public function index(Request $request)
     {
-        //
+        // Your logic here
     }
 }
 ```
 
-You can customize token, chat_id and topic_id in run time
+**⚡ Command or Job Handler:**
 
 ```php
+namespace App\Jobs;
 
-logger('message', [
-    'token' => 'your bot token',
-    'chat_id' => 'your chat id',
-    'topic_id' => 'your topic id'
-]);
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeQueued;
+use Illuminate\Foundation\Bus\Dispatchable;
+use TheCoder\MonologTelegram\Attributes\CriticalAttribute;
 
+class ProcessData implements ShouldBeQueued
+{
+    use Dispatchable, Queueable;
+
+    #[CriticalAttribute]
+    public function handle()
+    {
+        // Job processing logic
+    }
+}
 ```
 
-Add the following variables to your .env file.
+### 🔄 Customizing Log Settings at Runtime
 
-```dotenv
+You can dynamically set the bot token, chat ID, and topic ID while logging:
+
+```php
+logger('message', [
+    'token' => 'your_bot_token',
+    'chat_id' => 'your_chat_id',
+    'topic_id' => 'your_topic_id'
+]);
+```
+
+## 📜 Environment Variables
+
+Ensure the following variables are set in your `.env` file:
+
+```ini
 LOG_TELEGRAM_BOT_TOKEN=
 LOG_TELEGRAM_CHAT_ID=
 
-# If chat groups are used instead of telegram channels,
-# and the ability to set topics on groups is enabled,
-# this configuration can be utilized.
+# 🏷️ If using chat groups with topic support, define the topic ID
 LOG_TELEGRAM_TOPIC_ID=
 
-#LOG_TELEGRAM_BOT_API='https://api.telegram.org/bot'
-# add tor proxy for restricted country
-#LOG_TELEGRAM_BOT_PROXY='socks5h://localhost:9050'
+# 🌍 Optional: Change the API endpoint (default is Telegram's official API)
+LOG_TELEGRAM_BOT_API='https://api.telegram.org/bot'
 
-# Topic Level 
+# 🛡️ Optional: Use a proxy (e.g., Tor for restricted regions)
+LOG_TELEGRAM_BOT_PROXY='socks5h://localhost:9050'
+
+# 🔥 Topic Level Configurations
 LOG_TELEGRAM_EMERGENCY_ATTRIBUTE_TOPIC_ID=
 LOG_TELEGRAM_CRITICAL_ATTRIBUTE_TOPIC_ID=
 LOG_TELEGRAM_IMPORTANT_ATTRIBUTE_TOPIC_ID=
 LOG_TELEGRAM_DEBUG_ATTRIBUTE_TOPIC_ID=
 LOG_TELEGRAM_INFORMATION_ATTRIBUTE_TOPIC_ID=
 LOG_TELEGRAM_LOWPRIORITY_ATTRIBUTE_TOPIC_ID=
-
 ```
-# ScreenShot
 
-![image](https://user-images.githubusercontent.com/3877538/172431112-020d7a7c-f515-49bc-961a-3f63c9ff21af.png)
+## 📄 License
+
+This package is open-source and available under the MIT License. 🏆
 
