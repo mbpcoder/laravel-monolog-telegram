@@ -1,4 +1,4 @@
-# Monolog Telegram 🚀
+# Real-Time Laravel exception logs in your Telegram 🚀
 
 🔔 **Telegram Handler for Monolog** 📝
 
