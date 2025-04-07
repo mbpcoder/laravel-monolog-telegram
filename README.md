@@ -4,12 +4,12 @@
 
 Logging should be more than just saving data — it should **drive action**. Here’s why 🔔 **Telegram Handler for Monolog** 📝 is a game-changer:
 
-- 🚀 **Real-Time Feedback** – Get instant log messages delivered directly to your Telegram group or channel.
-- 🧠 **Actionable Insights** – Attach helpful context to logs so your team knows exactly what’s happening and where.
-- 🛡️ **No Need for Sentry or Third-Party Services** – Cut out the middleman and keep logs flowing without external dependencies.
-- ⚡ **Faster Awareness of Issues** – Know about exceptions the moment they occur, not hours later.
-- 👥 **Collaborative Debugging** – Send logs to group chats or topic threads, making it easy to assign and discuss issues within your team.
-- 🧩 **Flexible & Extensible** – Use PHP attributes to customize log routing per job, controller, or command — no magic, just clean code.
+- 🚀 **Real-Time Feedback** – Instantly receive logs in your Telegram chat.
+- 🧠 **Actionable Insights** – Include useful context for quick understanding.
+- 🛡️ **No Need for Sentry or Third-Party Services**
+- ⚡ **Immediate Alerts** – Be notified of issues the moment they happen.
+- 👥 **Team Collaboration** – Share logs in group chats for quick follow-up.
+- 🧩 **Easy Customization** – Use PHP attributes to control log routing.
 
 
 
