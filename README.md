@@ -11,7 +11,9 @@ Logging should be more than just saving data — it should **drive action**. Her
 - 👥 **Team Collaboration** – Share logs in group chats for quick follow-up.
 - 🧩 **Easy Customization** – Use PHP attributes to control log routing.
 
+## ScreenShot
 
+![image](https://user-images.githubusercontent.com/3877538/172431112-020d7a7c-f515-49bc-961a-3f63c9ff21af.png)
 
 ## 🎯 Installation
 
@@ -20,10 +22,6 @@ Install via Composer:
 ```sh
 composer require thecoder/laravel-monolog-telegram
 ```
-
-## ScreenShot
-
-![image](https://user-images.githubusercontent.com/3877538/172431112-020d7a7c-f515-49bc-961a-3f63c9ff21af.png)
 
 ## ⚙️ Usage
 
