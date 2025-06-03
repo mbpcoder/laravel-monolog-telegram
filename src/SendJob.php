@@ -26,6 +26,7 @@ class SendJob implements ShouldQueue
         private string      $chatId,
         private string|null $topicId = null,
         private string|null $proxy = null,
+        private int         $timeout = 5,
     )
     {
     }
@@ -39,7 +40,7 @@ class SendJob implements ShouldQueue
             $httpClientOption['proxy'] = $this->proxy;
         }
 
-        $httpClientOption['timeout'] = 5;
+        $httpClientOption['timeout'] = $this->timeout;
 
         $params = [
             'text' => $this->message,

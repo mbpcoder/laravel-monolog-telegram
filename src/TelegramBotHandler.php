@@ -53,6 +53,13 @@ class TelegramBotHandler extends AbstractProcessingHandler
     protected TopicDetector $topicDetector;
 
     /**
+     * Timeout for Telegram API requests in seconds.
+     *
+     * @var int
+     */
+    protected int $timeout;
+
+    /**
      * @param string $token Telegram bot access token provided by BotFather
      * @param string $channel Telegram channel name
      * @inheritDoc
@@ -66,7 +73,9 @@ class TelegramBotHandler extends AbstractProcessingHandler
                     $level = Logger::DEBUG,
         bool        $bubble = true,
         string      $bot_api = 'https://api.telegram.org/bot',
-        string|null $proxy = null)
+        string|null $proxy = null,
+        int         $timeout = 5
+    )
     {
         parent::__construct($level, $bubble);
 
@@ -78,6 +87,7 @@ class TelegramBotHandler extends AbstractProcessingHandler
         $this->level = $level;
         $this->bubble = $bubble;
         $this->proxy = $proxy;
+        $this->timeout = $timeout;
 
         $this->topicDetector = new TopicDetector($topics_level);
     }
@@ -127,9 +137,9 @@ class TelegramBotHandler extends AbstractProcessingHandler
         $message = $this->truncateTextToTelegramLimit($message);
 
         if (empty($this->queue)) {
-            dispatch_sync(new SendJob($url, $message, $chatId, $topicId, $this->proxy));
+            dispatch_sync(new SendJob($url, $message, $chatId, $topicId, $this->proxy, $this->timeout));
         } else {
-            dispatch(new SendJob($url, $message, $chatId, $topicId, $this->proxy))->onQueue($this->queue);
+            dispatch(new SendJob($url, $message, $chatId, $topicId, $this->proxy, $this->timeout))->onQueue($this->queue);
         }
     }
 
