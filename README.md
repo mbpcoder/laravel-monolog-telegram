@@ -61,6 +61,7 @@ return [
                 'bot_api' => env('LOG_TELEGRAM_BOT_API', 'https://api.telegram.org/bot'),
                 'proxy' => env('LOG_TELEGRAM_BOT_PROXY', null),
                 'queue' => env('LOG_TELEGRAM_QUEUE', null),
+                'timeout' => env('LOG_TELEGRAM_TIMEOUT', 5),
                 'topics_level' => [
                     EmergencyAttribute::class => env('LOG_TELEGRAM_EMERGENCY_ATTRIBUTE_TOPIC_ID', null),
                     CriticalAttribute::class => env('LOG_TELEGRAM_CRITICAL_ATTRIBUTE_TOPIC_ID', null),
