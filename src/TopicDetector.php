@@ -49,17 +49,26 @@ class TopicDetector
 
     private function getTopicByRoute(): string|null
     {
+        $topicId = null;
         $route = Route::current();
+
         if (!isset($route->getAction()['controller'])) {
             return null;
         }
 
-        [$controller, $method] = explode('@', $route->getAction()['controller']);
-
-        $topicId = $this->getTopicIdByReflection($controller, $method);
-        if ($topicId === false) {
-            $topicId = $this->getTopicIdByRegex($controller, $method);
+        if ($this->isLivewire() && app('livewire')->isLivewireRequest()) {
+            [$controller, $method] = $this->getMainLivewireClass();
+        } else {
+            [$controller, $method] = explode('@', $route->getAction()['controller']);
         }
+
+        if ($controller !== null) {
+            $topicId = $this->getTopicIdByReflection($controller, $method);
+            if ($topicId === false) {
+                $topicId = $this->getTopicIdByRegex($controller, $method);
+            }
+        }
+
 
         return $topicId;
     }
@@ -199,6 +208,45 @@ class TopicDetector
         } catch (\Throwable $e) {
         }
         return null;
+    }
+
+    private function isLivewire(): bool
+    {
+        return class_exists(\Livewire\Livewire::class);
+    }
+
+    protected function getMainLivewireClass(): array
+    {
+        $class = null;
+        $method = null;
+
+        try {
+            $request = request();
+            $payload = $request->all();
+
+            if (isset($payload['components'][0])) {
+                $componentData = $payload['components'][0];
+                $snapshot = json_decode($componentData['snapshot'], true);
+                $componentName = $snapshot['memo']['name'] ?? null;
+                $method = $componentData['calls'][0]['method'] ?? null;
+
+                $rootNamespace = config('livewire.class_namespace');
+
+                $class = collect(str($componentName)->explode('.'))
+                    ->map(fn($segment) => (string)str($segment)->studly())
+                    ->join('\\');
+
+                if (!empty($rootNamespace)) {
+                    $class = '\\' . $rootNamespace . '\\' . $class;
+                }
+
+            }
+        } catch (\Throwable $exception) {
+            //report($exception);
+        }
+
+        return [$class, $method];
+
     }
 
 }
