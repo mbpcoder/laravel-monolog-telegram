@@ -127,6 +127,30 @@ class ProcessData implements ShouldBeQueued
 }
 ```
 
+**⚙️ Livewire Component Route:**
+
+```html
+    <form wire:submit.prevent="save">
+```
+
+```php
+class CreatePost extends Component
+{
+    #[CriticalAttribute]
+    public function save()
+    {
+        
+    }
+
+    public function render()
+    {
+        return view('livewire.create-post');
+    }
+}
+```
+
+
+
 ### 🔄 Customizing Log Settings at Runtime
 
 You can dynamically set the bot token, chat ID, and topic ID while logging:
