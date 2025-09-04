@@ -40,7 +40,6 @@ class TopicDetector
         return null;
     }
 
-
     // Route Function
     private function appRunningWithRequest(): bool
     {
