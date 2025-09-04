@@ -194,6 +194,7 @@ class TopicDetector
                     $methodName = $match[2];
 
                     $attributes = array_map('trim', explode(',', $attributeString));
+
                     foreach ($attributes as $attribute) {
                         $attributeName = preg_replace('/\(.*/', '', $attribute);
                         $allAttributes[$methodName][] = $attributeName;
