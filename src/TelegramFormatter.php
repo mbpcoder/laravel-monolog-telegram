@@ -76,7 +76,6 @@ class TelegramFormatter implements FormatterInterface
         }
 
         return $this->getMessageForLog($record);
-
     }
 
     /**
@@ -127,7 +126,6 @@ class TelegramFormatter implements FormatterInterface
         } catch (\Exception $e) {
             // do noting
         }
-
 
         if (!is_null($request->user())) {
             $message .= PHP_EOL . '<b>User:</b> ' . $request->user()->id . ' / <b>Name:</b> ' . $request->user()->fullName;

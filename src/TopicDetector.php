@@ -69,7 +69,6 @@ class TopicDetector
             }
         }
 
-
         return $topicId;
     }
 
@@ -101,12 +100,14 @@ class TopicDetector
     {
         $topicId = null;
         $jobClass = $this->getJobClass();
+
         if ($jobClass !== null) {
             $topicId = $this->getTopicIdByReflection($jobClass, 'handle');
             if ($topicId === false) {
                 $topicId = $this->getTopicIdByRegex($jobClass, 'handle');
             }
         }
+
         return $topicId;
     }
 
@@ -141,12 +142,14 @@ class TopicDetector
     {
         $topicId = null;
         $commandClass = $this->getCommandClass();
+
         if ($commandClass !== null) {
             $topicId = $this->getTopicIdByReflection($commandClass, 'handle');
             if ($topicId === false) {
                 $topicId = $this->getTopicIdByRegex($commandClass, 'handle');
             }
         }
+
         return $topicId;
     }
 
@@ -167,13 +170,13 @@ class TopicDetector
         } catch (\Throwable $e) {
 
         }
+
         return false;
     }
 
     private function getTopicIdByRegex(string $class, string $method): string|int|null
     {
         try {
-
             $filePath = base_path(str_replace('App', 'app', $class) . '.php');
             $fileContent = file_get_contents($filePath);
             $allAttributes = [];
@@ -207,6 +210,7 @@ class TopicDetector
 
         } catch (\Throwable $e) {
         }
+
         return null;
     }
 
@@ -246,7 +250,5 @@ class TopicDetector
         }
 
         return [$class, $method];
-
     }
-
 }
