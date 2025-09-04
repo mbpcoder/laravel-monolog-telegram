@@ -53,9 +53,11 @@ class TelegramFormatter implements FormatterInterface
         $this->format = $format ?: self::MESSAGE_FORMAT;
         $this->dateFormat = $dateFormat ?: self::DATE_FORMAT;
         $this->separator = $separator;
+
         if (is_null($tags)) {
             $tags = '';
         }
+
         $this->tags = explode(',', $tags);
     }
 
@@ -65,18 +67,20 @@ class TelegramFormatter implements FormatterInterface
     public function format($record)
     {
         $message = '';
+
         if (isset($record['context']) && isset($record['context']['exception'])) {
             $exception = $record['context']['exception'];
+
             try {
                 $message = $this->getMessageForException($exception);
             } catch (\Exception $e) {
                 //
             }
+
             return $message;
         }
 
         return $this->getMessageForLog($record);
-
     }
 
     /**
@@ -85,6 +89,7 @@ class TelegramFormatter implements FormatterInterface
     public function formatBatch(array $records)
     {
         $message = '';
+
         foreach ($records as $record) {
             if (!empty($message)) {
                 $message .= str_repeat($this->separator, 15) . "\n";
@@ -100,11 +105,13 @@ class TelegramFormatter implements FormatterInterface
     {
         $severity = '';
         $request = app('request');
+
         if (method_exists($exception, 'getSeverity')) {
             $severity = $this->getSeverityName($exception->getSeverity());
         }
 
         $code = $exception->getCode();
+
         if (method_exists($exception, 'getStatusCode')) {
             $code = $exception->getStatusCode();
         }
@@ -128,7 +135,6 @@ class TelegramFormatter implements FormatterInterface
             // do noting
         }
 
-
         if (!is_null($request->user())) {
             $message .= PHP_EOL . '<b>User:</b> ' . $request->user()->id . ' / <b>Name:</b> ' . $request->user()->fullName;
         }
@@ -139,6 +145,7 @@ class TelegramFormatter implements FormatterInterface
 
         if (!empty($request->getMethod())) {
             $message .= PHP_EOL . '<b>Request Method:</b> ' . $request->getMethod();
+
             if ($request->ajax()) {
                 $message .= ' <b>(Ajax)</b> ';
             }
@@ -156,6 +163,7 @@ class TelegramFormatter implements FormatterInterface
     protected function getTags()
     {
         $message = '';
+
         foreach ($this->tags as $tag) {
             if (!empty($tag)) {
                 $message .= '#' . $tag . ' ';
@@ -224,9 +232,11 @@ class TelegramFormatter implements FormatterInterface
             8192 => 'DEPRECATED',
             16384 => 'USER_DEPRECATED',
         ];
+
         if (isset($severities[$key])) {
             return $severities[$key];
         }
+
         return '';
     }
 
@@ -245,6 +255,7 @@ class TelegramFormatter implements FormatterInterface
         $data = $request->except($sensitiveFields);
 
         $maskedData = $request->only($sensitiveFields);
+
         foreach ($maskedData as $key => &$value) {
             $value = '*';
         }
