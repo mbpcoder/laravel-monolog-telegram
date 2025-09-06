@@ -40,7 +40,6 @@ class TopicDetector
         return null;
     }
 
-
     // Route Function
     private function appRunningWithRequest(): bool
     {
@@ -64,11 +63,11 @@ class TopicDetector
 
         if ($controller !== null) {
             $topicId = $this->getTopicIdByReflection($controller, $method);
+
             if ($topicId === false) {
                 $topicId = $this->getTopicIdByRegex($controller, $method);
             }
         }
-
 
         return $topicId;
     }
@@ -79,6 +78,7 @@ class TopicDetector
         if (isset($e->job) || app()->bound('queue.worker')) {
             return true;
         }
+
         return false;
     }
 
@@ -101,12 +101,15 @@ class TopicDetector
     {
         $topicId = null;
         $jobClass = $this->getJobClass();
+
         if ($jobClass !== null) {
             $topicId = $this->getTopicIdByReflection($jobClass, 'handle');
+
             if ($topicId === false) {
                 $topicId = $this->getTopicIdByRegex($jobClass, 'handle');
             }
         }
+
         return $topicId;
     }
 
@@ -122,6 +125,7 @@ class TopicDetector
 
         if (str_contains($filePath, 'Console\Commands')) {
             $appPosition = strpos($filePath, 'app');
+
             if ($appPosition !== false) {
                 $appPath = substr($filePath, $appPosition);
                 return str_replace(['/', 'app', '.php'], ['\\', 'App', ''], $appPath);
@@ -141,12 +145,15 @@ class TopicDetector
     {
         $topicId = null;
         $commandClass = $this->getCommandClass();
+
         if ($commandClass !== null) {
             $topicId = $this->getTopicIdByReflection($commandClass, 'handle');
+
             if ($topicId === false) {
                 $topicId = $this->getTopicIdByRegex($commandClass, 'handle');
             }
         }
+
         return $topicId;
     }
 
@@ -167,25 +174,27 @@ class TopicDetector
         } catch (\Throwable $e) {
 
         }
+
         return false;
     }
 
     private function getTopicIdByRegex(string $class, string $method): string|int|null
     {
         try {
-
             $filePath = base_path(str_replace('App', 'app', $class) . '.php');
             $fileContent = file_get_contents($filePath);
             $allAttributes = [];
 
             // Regex to match attributes and methods
             $regex = '/\#\[\s*(.*?)\s*\]\s*public\s*function\s*(\w+)/';
+
             if (preg_match_all($regex, $fileContent, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as $match) {
                     $attributeString = $match[1];
                     $methodName = $match[2];
 
                     $attributes = array_map('trim', explode(',', $attributeString));
+
                     foreach ($attributes as $attribute) {
                         $attributeName = preg_replace('/\(.*/', '', $attribute);
                         $allAttributes[$methodName][] = $attributeName;
@@ -207,6 +216,7 @@ class TopicDetector
 
         } catch (\Throwable $e) {
         }
+
         return null;
     }
 
@@ -238,14 +248,11 @@ class TopicDetector
                 if (!empty($rootNamespace)) {
                     $class = '\\' . $rootNamespace . '\\' . $class;
                 }
-
             }
         } catch (\Throwable $exception) {
             //report($exception);
         }
 
         return [$class, $method];
-
     }
-
 }
