@@ -9,7 +9,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-
 class SendJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -56,7 +55,7 @@ class SendJob implements ShouldQueue
         $httpClient = new Client($httpClientOption);
 
         try {
-            $response = $httpClient->post($this->url, $requestOptions);
+            $httpClient->post($this->url, $requestOptions);
         } catch (\Throwable $exception) {
             $this->fail($exception);
         }

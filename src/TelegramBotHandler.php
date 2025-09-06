@@ -142,5 +142,4 @@ class TelegramBotHandler extends AbstractProcessingHandler
             dispatch(new SendJob($url, $message, $chatId, $topicId, $this->proxy, $this->timeout))->onQueue($this->queue);
         }
     }
-
 }
