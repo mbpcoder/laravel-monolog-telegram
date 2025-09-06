@@ -221,8 +221,7 @@ class TopicDetector
         $method = null;
 
         try {
-            $request = request();
-            $payload = $request->all();
+            $payload = request()->all();
 
             if (isset($payload['components'][0])) {
                 $componentData = $payload['components'][0];
