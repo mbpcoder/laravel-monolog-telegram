@@ -1,5 +1,9 @@
 # Real-Time Laravel exception logs in your Telegram 🚀
 
+## ScreenShot
+
+![image](https://user-images.githubusercontent.com/3877538/172431112-020d7a7c-f515-49bc-961a-3f63c9ff21af.png)
+
 ## ❓ Why Another Logger?
 
 Logging should be more than just saving data — it should **drive action**. Here’s why 🔔 **Telegram Handler for Monolog** 📝 is a game-changer:
@@ -10,10 +14,6 @@ Logging should be more than just saving data — it should **drive action**. Her
 - ⚡ **Immediate Alerts** – Be notified of issues the moment they happen.
 - 👥 **Team Collaboration** – Share logs in group chats for quick follow-up.
 - 🧩 **Easy Customization** – Use PHP attributes to control log routing.
-
-## ScreenShot
-
-![image](https://user-images.githubusercontent.com/3877538/172431112-020d7a7c-f515-49bc-961a-3f63c9ff21af.png)
 
 ## 🎯 Installation
 
