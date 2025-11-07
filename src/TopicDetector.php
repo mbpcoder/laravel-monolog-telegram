@@ -41,31 +41,36 @@ class TopicDetector
     }
 
     // Route Function
-    private function appRunningWithRequest(): bool
+    protected function appRunningWithRequest(): bool
     {
         return Route::current() !== null;
     }
 
-    private function getTopicByRoute(): string|null
+    protected function getActionClassAndMethod(): array
     {
-        $topicId = null;
         $route = Route::current();
-
         if (!isset($route->getAction()['controller'])) {
-            return null;
+            return [null, null];
         }
-
         if ($this->isLivewire() && app('livewire')->isLivewireRequest()) {
-            [$controller, $method] = $this->getMainLivewireClass();
-        } else {
-            [$controller, $method] = explode('@', $route->getAction()['controller']);
+            return $this->getMainLivewireClass();
         }
 
-        if ($controller !== null) {
-            $topicId = $this->getTopicIdByReflection($controller, $method);
+        $action = $route->getAction()['uses'] ?? $route->getAction()['controller'];
+        return explode('@', $action);
+    }
+
+    protected function getTopicByRoute(): string|null
+    {
+        [$actionClass, $method] = $this->getActionClassAndMethod();
+
+        $topicId = null;
+
+        if ($actionClass !== null) {
+            $topicId = $this->getTopicIdByReflection($actionClass, $method);
 
             if ($topicId === false) {
-                $topicId = $this->getTopicIdByRegex($controller, $method);
+                $topicId = $this->getTopicIdByRegex($actionClass, $method);
             }
         }
 
@@ -73,12 +78,12 @@ class TopicDetector
     }
 
     // Job function
-    private function appRunningWithJob(): bool
+    protected function appRunningWithJob(): bool
     {
         return (isset($e->job) || app()->bound('queue.worker'));
     }
 
-    private function getJobClass(): string|null
+    protected function getJobClass(): string|null
     {
         if (!app()->bound('queue.worker')) {
             return null;
@@ -93,7 +98,7 @@ class TopicDetector
         return null;
     }
 
-    private function getTopicIdByJob(): string|int|null
+    protected function getTopicIdByJob(): string|int|null
     {
         $topicId = null;
         $jobClass = $this->getJobClass();
@@ -110,12 +115,12 @@ class TopicDetector
     }
 
     // Command function
-    private function appRunningWithCommand(): bool
+    protected function appRunningWithCommand(): bool
     {
         return app()->runningInConsole();
     }
 
-    private function getCommandClass(): string|null
+    protected function getCommandClass(): string|null
     {
         $filePath = $this->exception->getFile();
 
@@ -137,7 +142,7 @@ class TopicDetector
         return null;
     }
 
-    private function getTopicIdByCommand(): string|int|null
+    protected function getTopicIdByCommand(): string|int|null
     {
         $topicId = null;
         $commandClass = $this->getCommandClass();
@@ -154,7 +159,7 @@ class TopicDetector
     }
 
     // General function
-    private function getTopicIdByReflection(string $class, string $method): string|int|null|bool
+    protected function getTopicIdByReflection(string $class, string $method): string|int|null|bool
     {
         try {
             $reflectionMethod = new ReflectionMethod($class, $method);
@@ -174,7 +179,7 @@ class TopicDetector
         return false;
     }
 
-    private function getTopicIdByRegex(string $class, string $method): string|int|null
+    protected function getTopicIdByRegex(string $class, string $method): string|int|null
     {
         try {
             $filePath = base_path(str_replace('App', 'app', $class) . '.php');
@@ -216,7 +221,7 @@ class TopicDetector
         return null;
     }
 
-    private function isLivewire(): bool
+    protected function isLivewire(): bool
     {
         return class_exists(\Livewire\Livewire::class);
     }
