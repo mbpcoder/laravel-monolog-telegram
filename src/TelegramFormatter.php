@@ -118,7 +118,7 @@ class TelegramFormatter implements FormatterInterface
 
         $message = $severity . ' <b>Time: </b> ' . date('Y-m-d H:i:s') . PHP_EOL
             . '<b>On: </b> ' . app()->environment() . PHP_EOL
-            . '<b>Message:</b> ' . $exception->getMessage() . PHP_EOL
+            . '<b>Message:</b> ' . substr($exception->getMessage(), 0, 150)  . PHP_EOL
             . '<b>Exception:</b> ' . get_class($exception) . PHP_EOL
             . '<b>Code:</b> ' . $code . PHP_EOL
             . '<b>Tags:</b> ' . $this->getTags() . PHP_EOL
